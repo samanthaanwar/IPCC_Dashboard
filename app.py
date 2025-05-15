@@ -20,8 +20,11 @@ with tab1:
     st.plotly_chart(count_bar(wg1))
     st.header("Data-driven figures with and without issues", divider=True)
     st.plotly_chart(quant_errors(wg1))
+    st.header("Error percentage", divider=True)
     st.plotly_chart(error_mix(wg1))
+    st.header("Figures breakdown", divider=True)
     st.plotly_chart(sunburst('WGI.xlsx', 'WGI Chapters'))
+    st.header("Data-driven figures breakdown", divider=True)
     st.plotly_chart(sunburst2('WGI.xlsx', wg_prefix='WGI'))
 
 with tab2:
