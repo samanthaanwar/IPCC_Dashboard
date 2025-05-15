@@ -1,3 +1,7 @@
+import sys
+
+sys.dont_write_bytecode = True
+
 import pandas as pd
 import plotly.express as px
 import numpy as np
@@ -87,6 +91,8 @@ def count_bar(df):
         category_orders={'Section': section_order})
 
     fig.update_layout(
+        xaxis_title=None,
+        yaxis_title=None,
         legend_title_text=None, 
         font_family='Arial',
         legend=dict(
@@ -129,6 +135,8 @@ def quant_errors(df):
     
     fig.update_traces(hovertemplate='<b>%{y}</b><br>%{customdata[0]}: %{x}%<extra></extra>')
     fig.update_layout(
+        xaxis_title=None,
+        yaxis_title=None,
         legend_title_text=None, 
         font_family='Arial',
         legend=dict(orientation='h', yanchor='bottom',
@@ -177,6 +185,8 @@ def error_mix(df):
 
     fig.update_traces(hovertemplate='<b>%{y}</b><br>%{customdata[0]}: %{x}%<extra></extra>')
     fig.update_layout(
+        xaxis_title=None,
+        yaxis_title=None,
         legend_title_text=None, 
         font_family='Arial',
         legend=dict(orientation='h', yanchor='bottom',
@@ -238,4 +248,77 @@ def sunburst2(file, wg_prefix='WGI'):
 
     return fig
 
+def insert_line_breaks(text, max_len=20):
+    words = text.split()
+    lines, current = [], ""
+    for word in words:
+        if len(current) + len(word) + 1 > max_len:
+            lines.append(current)
+            current = word
+        else:
+            current += (" " if current else "") + word
+    lines.append(current)
+    return "<br>".join(lines)
 
+def funnel(df):
+    '''
+    build dark blue archived section one column at a time
+    '''
+
+    # column 1: Data-driven figures with archived data (double-counted)
+    col1_name = 'Data-driven figures with archived data (double counted)'
+    col1 = df.groupby(['Section','Type', 'Data status']).size().reset_index(name='Count').drop(columns='Type')
+
+    sections = col1.Section.unique()
+    statuses = col1['Data status'].unique()
+
+    index_col1 = pd.MultiIndex.from_product([sections, statuses], names=['Section', 'Data status'])
+    col1 = col1.set_index(['Section', 'Data status']).reindex(index_col1, fill_value=0).reset_index()
+    col1 = col1[col1['Data status'] == 'Found']
+    col1['Data status'] = col1['Data status'].replace('Found', col1_name)
+    col1 = col1.rename(columns={'Data status': 'Stage'}).reset_index(drop=True)
+
+    # column 2: UNIQUE data-driven figures with archived data
+    col2_name = 'Unique data driven & Archived'
+    col2 = (df
+        .groupby(['Section','Type', col2_name])
+        .size()
+        .reset_index(name='Count'))
+
+    col2 = (col2[(col2.Type == 'Quantitative') & (col2[col2_name] == True)]
+            .drop(columns='Type')
+            .rename(columns={col2_name: 'Stage'}))
+
+    tf = [True]
+    index_col2 = pd.MultiIndex.from_product([sections, tf], names = ['Section', 'Stage'])
+    col2 = col2.set_index(['Section', 'Stage']).reindex(index_col2, fill_value=0).reset_index()
+    col2['Stage'] = col2['Stage'].replace(True, col2_name)
+
+    # column 3: UNIQUE data-driven figures with archived data and NO ISSUES
+    col3_name = 'Unique data driven & Archived & No issue?'
+
+    col3 = (df
+            .groupby(['Section','Type', col3_name])
+            .size()
+            .reset_index(name='Count'))
+
+    col3 = (col3[(col3.Type == 'Quantitative') & (col3[col3_name] == True)]
+            .drop(columns='Type')
+            .rename(columns={col3_name: 'Stage'}))
+
+    col3 = col3.set_index(['Section', 'Stage']).reindex(index_col2, fill_value=0).reset_index() # reuse index from col2
+    col3['Stage'] = col3['Stage'].replace(True, col3_name)
+
+    blue = pd.concat([col1, col2, col3])
+
+    blue['Stage'] = blue['Stage'].apply(insert_line_breaks)
+
+    fig = px.funnel(blue, x='Count', y='Stage', color='Section', custom_data='Section')
+    fig.update_layout(
+        legend_title_text=None,
+        legend=dict(orientation='h', yanchor='bottom',
+                    y=1.02, xanchor='center', x=0.5),
+        yaxis_title='')
+    fig.update_traces(hovertemplate='<b>%{customdata[0]}</b><br>%{y}:<br><em>%{x} figures</em><extra></extra>')
+
+    return fig
