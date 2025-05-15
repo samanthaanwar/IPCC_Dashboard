@@ -213,8 +213,13 @@ def sunburst2(file, wg_prefix='WGI'):
     df = pd.concat(all_dfs, ignore_index=True)
     df = df[df['Type'] == 'Quantitative'].copy()
 
-    # Create 'Section' for sunburst display
-    df['Section'] = df['Chapter'].astype(str)
+    def format_chapter_label(x):
+        try:
+            return f'Chapter {int(x)}'  # if it's a number, format it
+        except (ValueError, TypeError):
+            return str(x)  # else keep it as-is (SPM, TS, Annex, etc.)
+
+    df['Section'] = df['Chapter'].apply(format_chapter_label)
 
     # Sunburst hierarchy
     df['Unique Label'] = df['Unique?'].map({True: 'Unique', False: 'Not Unique'})
