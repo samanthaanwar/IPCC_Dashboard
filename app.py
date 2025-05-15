@@ -7,11 +7,22 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 from viz import *
+from st_flexible_callout_elements import flexible_callout, flexible_info, flexible_warning
 
 st.set_page_config(
     page_title='IPCC AR6 Data Rescue',
     page_icon='🌎',
 )
+
+flexible_warning('''
+    <b>Navigation Help</b>
+
+    All visualizations here are dynamic and interactive. In the bar charts and funnel chart,
+    double-click on a category (SPM, TS, etc.) to isolate the visualization to the selection.
+    Single-click will remove the selection from view.
+
+    Click on the inner rings in the sunburst charts to view more details in that section.''',
+    border_radius=20)
 
 tab1, tab2, tab3 = st.tabs(['WGI', 'WGII', 'WGIII'])
 
