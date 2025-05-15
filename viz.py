@@ -214,7 +214,7 @@ def sunburst2(file, wg_prefix='WGI'):
     df = df[df['Type'] == 'Quantitative'].copy()
 
     # Create 'Section' for sunburst display
-    df['Section'] = 'Chapter ' + df['Chapter'].astype(str)
+    df['Section'] = df['Chapter'].astype(str)
 
     # Sunburst hierarchy
     df['Unique Label'] = df['Unique?'].map({True: 'Unique', False: 'Not Unique'})
