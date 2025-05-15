@@ -10,6 +10,8 @@ should update automatically (may take a few minutes to reboot) without rerunning
 
 To add another tab in the app, update `app.py`.
 
+***Note:*** The data in the SYR tab is currently hardcoded into `app.py` because we did not have access to a file in the same format as the others. Please update data in `app.py` directly.
+
 Visualizations were created using interactive graphing library [Plotly](https://plotly.com/python/). The web application uses [Streamlit](https://docs.streamlit.io).
 
 The owner of this Github and the deployed Streamlit app is Samantha Anwar (soa2134@columbia.edu). Contact Samantha with any questions or to request push access to this repo
