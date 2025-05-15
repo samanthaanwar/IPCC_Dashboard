@@ -203,65 +203,30 @@ def sunburst2(file, wg_prefix='WGI'):
                 df['Chapter'] = chapter_label
             all_dfs.append(df)
 
-    # Add Cross-Chapter sheet if found
+    # Add Cross-Chapter sheet if available
     cross_sheet = next((s for s in sheets if 'Cross' in s), None)
     if cross_sheet:
         df_cross = pd.read_excel(file, sheet_name=cross_sheet)
         all_dfs.append(df_cross)
 
     df = pd.concat(all_dfs, ignore_index=True)
-
-    # Filter for Quantitative only
-    df = df[df['Type'] == 'Quantitative'].copy()
-
-    # Create 'Section' for sunburst display
     df['Section'] = 'Chapter ' + df['Chapter'].astype(str)
-
-    # Order chapter sections: SPM, TS, 1-n, Annex
-    section_order = ['Chapter SPM', 'Chapter TS']
-    chapter_nums = sorted(
-        df[~df['Chapter'].isin(['SPM', 'TS', 'Annex'])]['Chapter'].dropna().astype(str).unique(),
-        key=lambda x: int(x) if x.isdigit() else x
-    )
-    section_order += [f'Chapter {x}' for x in chapter_nums]
-    if 'Annex' in df['Chapter'].values:
-        section_order.append('Chapter Annex')
-
-    df['Section'] = pd.Categorical(df['Section'], categories=section_order, ordered=True)
-
-    # Sunburst hierarchy
     df['Unique Label'] = df['Unique?'].map({True: 'Unique', False: 'Not Unique'})
+
     df['Archived Label'] = df.apply(
         lambda row: 'Archived' if row['Unique Label'] == 'Unique' and row['Unique data driven & Archived'] else 
                     'Not Archived' if row['Unique Label'] == 'Unique' else None, axis=1)
+    
     df['Issues Label'] = df.apply(
         lambda row: 'Issues' if row['Archived Label'] == 'Archived' and row['Issues?'] == True else 
                     'No Issues' if row['Archived Label'] == 'Archived' and row['Issues?'] == False else None, axis=1)
 
-    # Ensure no nulls in sunburst path
-    for col in ['Section', 'Unique Label', 'Archived Label', 'Issues Label']:
-        df[col] = df[col].fillna('None').astype(str)
-
-    # Group for sunburst
     grouped = df.groupby(['Section', 'Unique Label', 'Archived Label', 'Issues Label'], dropna=False).size().reset_index(name='Count')
 
-    # Create sunburst
-    fig = px.sunburst(
-        grouped,
-        path=['Section', 'Unique Label', 'Archived Label', 'Issues Label'],
-        values='Count',
-        branchvalues='total'
-    )
-
-    fig.update_layout(
-        margin=dict(t=10, l=10, r=10, b=10),
-        height=750,
-        width=750
-    )
-    fig.update_traces(
-        hovertemplate='<b>%{label}</b><br>Count: %{value}<br>Share of parent: %{percentParent:.1%}<extra></extra>',
-        sort=False
-    )
+    fig = px.sunburst(grouped, path=['Section', 'Unique Label', 'Archived Label', 'Issues Label'], values='Count')
+    fig.update_layout(margin=dict(t=10, l=10, r=10, b=10), height=750, width=750)
+    fig.update_traces(hovertemplate='<b>%{label}</b><br>Count: %{value}<br>Share of parent: %{percentParent:.1%}<extra></extra>')
 
     return fig
+
 
