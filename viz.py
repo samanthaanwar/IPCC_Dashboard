@@ -208,15 +208,19 @@ def sunburst2(file, wg_prefix='WGI'):
     if cross_sheet:
         df_cross = pd.read_excel(file, sheet_name=cross_sheet)
         all_dfs.append(df_cross)
-
+    
+    # Filter for Quantitative only
     df = pd.concat(all_dfs, ignore_index=True)
-    df['Section'] = 'Chapter ' + df['Chapter'].astype(str)
-    df['Unique Label'] = df['Unique?'].map({True: 'Unique', False: 'Not Unique'})
+    df = df[df['Type'] == 'Quantitative'].copy()
 
+    # Create 'Section' for sunburst display
+    df['Section'] = 'Chapter ' + df['Chapter'].astype(str)
+
+    # Sunburst hierarchy
+    df['Unique Label'] = df['Unique?'].map({True: 'Unique', False: 'Not Unique'})
     df['Archived Label'] = df.apply(
         lambda row: 'Archived' if row['Unique Label'] == 'Unique' and row['Unique data driven & Archived'] else 
                     'Not Archived' if row['Unique Label'] == 'Unique' else None, axis=1)
-    
     df['Issues Label'] = df.apply(
         lambda row: 'Issues' if row['Archived Label'] == 'Archived' and row['Issues?'] == True else 
                     'No Issues' if row['Archived Label'] == 'Archived' and row['Issues?'] == False else None, axis=1)
