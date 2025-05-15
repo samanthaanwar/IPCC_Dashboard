@@ -16,7 +16,9 @@ with tab1:
 
     wg1 = concat_sheets('WGI.xlsx', wg='WGI')
     
+    st.header("No. of figures", divider=True)
     st.plotly_chart(count_bar(wg1))
+    st.header("Data-driven figures with and without issues", divider=True)
     st.plotly_chart(quant_errors(wg1))
     st.plotly_chart(error_mix(wg1))
     st.plotly_chart(sunburst('WGI.xlsx', 'WGI Chapters'))
@@ -27,10 +29,15 @@ with tab2:
 
     wg2 = concat_sheets('WGII.xlsx', wg='WGII')
     
+    st.header("No. of figures", divider=True)
     st.plotly_chart(count_bar(wg2))
+    st.header("Data-driven figures with and without issues", divider=True)
     st.plotly_chart(quant_errors(wg2))
+    st.header("Error percentage", divider=True)
     st.plotly_chart(error_mix(wg2))
+    st.header("Figures breakdown", divider=True)
     st.plotly_chart(sunburst('WGII.xlsx', 'WGII Chapters'))
+    st.header("Data-driven figures breakdown", divider=True)
     st.plotly_chart(sunburst2('WGII.xlsx', wg_prefix='WGII'))
 
 with tab3:
@@ -38,8 +45,13 @@ with tab3:
 
     wg3 = concat_sheets('WGIII.xlsx', wg='WGIII')
     
+    st.header("No. of figures", divider=True)
     st.plotly_chart(count_bar(wg3))
+    st.header("Data-driven figures with and without issues", divider=True)
     st.plotly_chart(quant_errors(wg3))
+    st.header("Error percentage", divider=True)
     st.plotly_chart(error_mix(wg3))
+    st.header("Figures breakdown", divider=True)
     st.plotly_chart(sunburst('WGIII.xlsx', 'WGIII Chapters'))
+    st.header("Data-driven figures breakdown", divider=True)
     st.plotly_chart(sunburst2('WGIII.xlsx', wg_prefix='WGIII'))
