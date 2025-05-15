@@ -20,6 +20,7 @@ with tab1:
     st.plotly_chart(quant_errors(wg1))
     st.plotly_chart(error_mix(wg1))
     st.plotly_chart(sunburst('WGI.xlsx', 'WGI Chapters'))
+    st.plotly_chart(sunburst2('WGI.xlsx', wg_prefix='WGI'))
 
 with tab2:
     st.title('Working Group II Data Rescue')
@@ -30,6 +31,7 @@ with tab2:
     st.plotly_chart(quant_errors(wg2))
     st.plotly_chart(error_mix(wg2))
     st.plotly_chart(sunburst('WGII.xlsx', 'WGII Chapters'))
+    st.plotly_chart(sunburst2('WGII.xlsx', wg_prefix='WGII'))
 
 with tab3:
     st.title('Working Group III Data Rescue')
@@ -40,3 +42,4 @@ with tab3:
     st.plotly_chart(quant_errors(wg3))
     st.plotly_chart(error_mix(wg3))
     st.plotly_chart(sunburst('WGIII.xlsx', 'WGIII Chapters'))
+    st.plotly_chart(sunburst2('WGIII.xlsx', wg_prefix='WGIII'))

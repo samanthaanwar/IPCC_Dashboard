@@ -183,3 +183,48 @@ def error_mix(df):
                     y=1.02, xanchor='center', x=0.5))
 
     return fig
+
+def sunburst2(file, wg_prefix='WGI'):
+    xls = pd.ExcelFile(file)
+    sheets = xls.sheet_names
+
+    sheet_map = {
+        f'{wg_prefix} SPM': 'SPM',
+        f'{wg_prefix} TS': 'TS',
+        f'{wg_prefix} Chapters': None,
+        f'{wg_prefix} Annex': 'Annex',
+    }
+
+    all_dfs = []
+    for sheet, chapter_label in sheet_map.items():
+        if sheet in sheets:
+            df = pd.read_excel(file, sheet_name=sheet)
+            if chapter_label:
+                df['Chapter'] = chapter_label
+            all_dfs.append(df)
+
+    # Add Cross-Chapter sheet if available
+    cross_sheet = next((s for s in sheets if 'Cross' in s), None)
+    if cross_sheet:
+        df_cross = pd.read_excel(file, sheet_name=cross_sheet)
+        all_dfs.append(df_cross)
+
+    df = pd.concat(all_dfs, ignore_index=True)
+    df['Section'] = 'Chapter ' + df['Chapter'].astype(str)
+    df['Unique Label'] = df['Unique?'].map({True: 'Unique', False: 'Not Unique'})
+
+    df['Archived Label'] = df.apply(
+        lambda row: 'Archived' if row['Unique Label'] == 'Unique' and row['Unique data driven & Archived'] else 
+                    'Not Archived' if row['Unique Label'] == 'Unique' else None, axis=1)
+    
+    df['Issues Label'] = df.apply(
+        lambda row: 'Issues' if row['Archived Label'] == 'Archived' and row['Issues?'] == True else 
+                    'No Issues' if row['Archived Label'] == 'Archived' and row['Issues?'] == False else None, axis=1)
+
+    grouped = df.groupby(['Section', 'Unique Label', 'Archived Label', 'Issues Label'], dropna=False).size().reset_index(name='Count')
+
+    fig = px.sunburst(grouped, path=['Section', 'Unique Label', 'Archived Label', 'Issues Label'], values='Count')
+    fig.update_layout(margin=dict(t=10, l=10, r=10, b=10), height=750, width=750)
+    fig.update_traces(hovertemplate='<b>%{label}</b><br>Count: %{value}<br>Share of parent: %{percentParent:.1%}<extra></extra>')
+
+    return fig
