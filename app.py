@@ -25,6 +25,10 @@ with tab1:
     st.header("Figures breakdown", divider=True)
     st.plotly_chart(sunburst('WGI.xlsx', 'WGI Chapters'))
     st.header("Data-driven figures breakdown", divider=True)
+    st.markdown("This sunburst diagram shows the number of data-driven figures in " \
+    "SPM, TS, chapters, annexes, and cross-chapters. It first breaks them down into unique and non-unique figures." \
+    "We break down unique figures further into those with archived data and those without. Among unique figures with archived data," \
+    "we distinguish between those with and without issues with the archived data.")
     st.plotly_chart(sunburst2('WGI.xlsx', wg_prefix='WGI'))
 
 with tab2:
@@ -41,6 +45,10 @@ with tab2:
     st.header("Figures breakdown", divider=True)
     st.plotly_chart(sunburst('WGII.xlsx', 'WGII Chapters'))
     st.header("Data-driven figures breakdown", divider=True)
+    st.markdown("This sunburst diagram shows the number of data-driven figures in " \
+    "SPM, TS, chapters, annexes, and cross-chapters. It first breaks them down into unique and non-unique figures." \
+    "We break down unique figures further into those with archived data and those without. Among unique figures with archived data," \
+    "we distinguish between those with and without issues with the archived data.")
     st.plotly_chart(sunburst2('WGII.xlsx', wg_prefix='WGII'))
 
 with tab3:
@@ -57,4 +65,8 @@ with tab3:
     st.header("Figures breakdown", divider=True)
     st.plotly_chart(sunburst('WGIII.xlsx', 'WGIII Chapters'))
     st.header("Data-driven figures breakdown", divider=True)
+    st.markdown("This sunburst diagram shows the number of data-driven figures in " \
+    "SPM, TS, chapters, annexes, and cross-chapters. It first breaks them down into unique and non-unique figures." \
+    "We break down unique figures further into those with archived data and those without. Among unique figures with archived data," \
+    "we distinguish between those with and without issues with the archived data.")
     st.plotly_chart(sunburst2('WGIII.xlsx', wg_prefix='WGIII'))
