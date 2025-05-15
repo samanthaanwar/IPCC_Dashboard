@@ -24,7 +24,7 @@ flexible_warning('''
     Click on the inner rings in the sunburst charts to view more details in that section.''',
     border_radius=20)
 
-tab1, tab2, tab3 = st.tabs(['WGI', 'WGII', 'WGIII'])
+tab1, tab2, tab3, tab4 = st.tabs(['WGI', 'WGII', 'WGIII', 'SYR'])
 
 with tab1:
     st.title('Working Group I Data Rescue')
@@ -106,3 +106,19 @@ with tab3:
 
     st.header('Archived data-driven figures', divider=True)
     st.plotly_chart(funnel(wg3))
+
+with tab4:
+    st.title('SYR Data Rescue')
+
+    df = pd.DataFrame({
+        'sections': ['SPM', 'SPM', 'SPM', 'SPM', 'LR', 'LR', 'LR', 'LR'],
+        'cat1':     ['Archived', 'Archived', 'Archived', 'Not Archived', 'Archived', 'Archived', 'Archived', 'Not Archived'],
+        'cat2':     ['Unique', 'Unique', 'Not Unique', None, 'Unique', 'Unique', 'Not Unique', None],
+        'cat3':     ['Issues', 'No Issues', None, None, 'Issues', 'No Issues', None, None],
+        'values':   [1, 22, 0, 1, 0, 27, 19, 3]
+    })
+    
+    fig = px.sunburst(df, path=['sections', 'cat1', 'cat2', 'cat3'], values='values')
+    fig.update_layout(margin=dict(t=10, l=10, r=10, b=10), height=600, width=600)
+    fig.update_traces(hovertemplate='<b>%{label}</b><br>Count: %{value}<br>Share of parent: %{percentParent:.1%}<extra></extra>')
+    st.plotly_chart(fig)
