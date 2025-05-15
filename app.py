@@ -4,6 +4,11 @@ import numpy as np
 import plotly.express as px
 from viz import *
 
+st.set_page_config(
+    page_title='IPCC AR6 Data Rescue',
+    page_icon='🌎',
+)
+
 tab1, tab2, tab3 = st.tabs(['WGI', 'WGII', 'WGIII'])
 
 with tab1:
