@@ -185,9 +185,6 @@ def error_mix(df):
     return fig
 
 def sunburst2(file, wg_prefix='WGI'):
-    import pandas as pd
-    import plotly.express as px
-
     xls = pd.ExcelFile(file)
     sheets = xls.sheet_names
 
@@ -240,6 +237,10 @@ def sunburst2(file, wg_prefix='WGI'):
     df['Issues Label'] = df.apply(
         lambda row: 'Issues' if row['Archived Label'] == 'Archived' and row['Issues?'] == True else 
                     'No Issues' if row['Archived Label'] == 'Archived' and row['Issues?'] == False else None, axis=1)
+
+    # Ensure no nulls in sunburst path
+    for col in ['Section', 'Unique Label', 'Archived Label', 'Issues Label']:
+        df[col] = df[col].fillna('None').astype(str)
 
     # Group for sunburst
     grouped = df.groupby(['Section', 'Unique Label', 'Archived Label', 'Issues Label'], dropna=False).size().reset_index(name='Count')
